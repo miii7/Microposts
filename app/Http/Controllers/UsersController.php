@@ -27,8 +27,11 @@ class UsersController extends Controller
         // 関係するモデルの件数をロード
         $user->loadRelationshipCounts();
 
-        // ユーザの投稿一覧を作成日時の降順で取得
-        $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
+        // ユーザの投稿一覧とお気に入り一覧を作成日時の降順で取得
+        
+        $microposts = $user->feed_microposts()->orderBy('created_at', 'desc')->paginate(10);
+        
+        
 
         // ユーザ詳細ビューでそれらを表示
         return view('users.show', [
@@ -85,6 +88,23 @@ class UsersController extends Controller
         ]);
     }
 
+     public function favorites($id)
+    {
+        // idの値でユーザを検索して取得
+        $user = User::findOrFail($id);
+
+        // 関係するモデルの件数をロード
+        $user->loadRelationshipCounts();
+
+        // ユーザのお気に入り一覧を取得
+        $favorites = $user->favorites()->paginate(10);
+
+        // お気に入り一覧ビューでそれらを表示
+        return view('users.favorites', [
+            'user' => $user,
+            'favorites' => $favorites,
+        ]);
+    }
 
 }
 
